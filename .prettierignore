@@ -1,0 +1,11 @@
+node_modules/
+coverage/
+docs/coverage.svg
+# Formatted as one line per test on purpose, and reflowing them would bury the change history of
+# every assertion.
+tests/
+# Prose. Reflowing paragraphs turns a one-word change into a whole-paragraph diff.
+README.md
+CLAUDE.md
+docs/
+.claude/

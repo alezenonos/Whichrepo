@@ -1,0 +1,47 @@
+{
+  "name": "whichrepo",
+  "version": "0.1.0",
+  "description": "The parent of the which* comparison sites: evidence-gated, price-versus-weighted-score charts for finding the best something for the money.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alezenonos/Whichrepo"
+  },
+  "exports": {
+    "./browser/*": "./browser/*",
+    "./node/*": "./node/*",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "which-lint": "bin/which-lint.mjs",
+    "which-coverage": "bin/which-coverage.mjs",
+    "which-preview": "bin/which-preview.mjs",
+    "which-vendor": "bin/which-vendor.mjs"
+  },
+  "files": [
+    "bin",
+    "browser",
+    "node",
+    "docs",
+    "README.md",
+    "CLAUDE.md"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "lint": "node bin/which-lint.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify": "npm run lint && npm test",
+    "coverage": "node bin/which-coverage.mjs",
+    "coverage:check": "node bin/which-coverage.mjs --check",
+    "check": "npm run format:check && npm run lint && npm run coverage:check"
+  },
+  "engines": {
+    "node": ">=22.5.0 <23"
+  },
+  "devDependencies": {
+    "prettier": "3.9.9"
+  }
+}

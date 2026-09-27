@@ -1,0 +1,19 @@
+# #141. Actions are pinned by major tag and the dev dependencies by caret range, and nothing proposed
+# an update: Playwright, which pins the Chromium build the browser suites run, moves monthly. Monthly
+# pull requests, grouped per ecosystem so one review covers one month.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      dev-dependencies:
+        patterns: ['*']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']
