@@ -61,7 +61,7 @@ describe('the bundler refuses what concatenation cannot provide, by file and lin
 
 describe('the browser modules this package ships bundle', () => {
   // The order an instance concatenates them in: a module before everything that imports it.
-  const order = ['contrast.js', 'bands.js', 'pareto.js', 'weights.js', 'scales.js', 'colour.js'];
+  const order = ['contrast.js', 'bands.js', 'pareto.js', 'weights.js', 'scales.js', 'colour.js', 'priorities.js', 'pair-fit.js', 'sampling.js'];
 
   it('lists every browser module, so a new one cannot ship untested by the bundler', () => {
     assert.deepEqual([...order].sort(), fs.readdirSync('browser').filter((name) => name.endsWith('.js')).sort());

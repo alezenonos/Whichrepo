@@ -73,6 +73,27 @@ An array given once to `createWeightModel`:
 When dimensions change, bump `storageSchemaVersion` and give `createWeightModel` a `migrate` hook
 that brings an older saved allocation up to date rather than discarding it.
 
+The same array binds the priority and pair-fit models, when an instance uses them:
+
+```js
+const priorities = createPriorityModel({ dimensions });   // rankings and levels -> whole percentages
+const pairFit = createPairFit({
+  dimensions,
+  levelWeights: priorities.levelWeights,                   // the weights the page scores with
+  scoreOf: (item, weights) => model.calculatePersonalisedScore(item.scores, weights),
+  priced: (item) => Number.isFinite(item.purchasePrice),   // optional: which prices a pair may compare
+});
+```
+
+The chart's price zoom (`browser/sampling.js`) snaps a zoomed range to round units and steps its
+ticks in them: by default a tenth of the order of magnitude of the cheapest price in range (1,000
+from 15,000; 10 from 300). An instance that prints prices in a fixed unit sets it once with
+`configureZoom({ unit: 1000 })`.
+
+Both priority factories return whole percentages the weight model accepts, so what they set survives storage and links
+like any allocation. The fit chooses levels and never scores: give it the instance's own score, or a
+pick it "agrees" with can be ranked the other way on the page.
+
 ## 4. The generated catalogue
 
 The instance's generator turns its YAML catalogue into one ES module the browser loads, with named
@@ -116,7 +137,7 @@ The instance runs `which-vendor` after installing or bumping the package, commit
 `paths.vendor`, and runs `which-vendor --check` in its `check` script and in CI. Its own browser
 modules import from the vendored path (`./whichrepo/pareto.js`) and its build lists the vendored
 files in dependency order before its own: `contrast.js`, `bands.js`, `pareto.js`, `weights.js`,
-`scales.js`, `colour.js`.
+`scales.js`, `colour.js`, `priorities.js`, `pair-fit.js`, `sampling.js`.
 
 Because the build concatenates, an instance module may **re-export** a vendored name but may not
 **redeclare** it: `export { dominates } from './whichrepo/pareto.js'` is fine; a second top-level
