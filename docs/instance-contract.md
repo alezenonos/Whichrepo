@@ -85,7 +85,12 @@ const pairFit = createPairFit({
 });
 ```
 
-Both return whole percentages the weight model accepts, so what they set survives storage and links
+The chart's price zoom (`browser/sampling.js`) snaps a zoomed range to round units and steps its
+ticks in them: by default a tenth of the order of magnitude of the cheapest price in range (1,000
+from 15,000; 10 from 300). An instance that prints prices in a fixed unit sets it once with
+`configureZoom({ unit: 1000 })`.
+
+Both priority factories return whole percentages the weight model accepts, so what they set survives storage and links
 like any allocation. The fit chooses levels and never scores: give it the instance's own score, or a
 pick it "agrees" with can be ranked the other way on the page.
 

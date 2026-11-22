@@ -9,7 +9,8 @@ turned into whole percentages, and read back from them; it sat beside the band m
 `scoring.js` and named no car. `browser/pair-fit.js` (`createPairFit`): "Help me choose", which two of a
 visitor's closest matches to compare and the importance levels that agree with their picks, judged
 on the page's own whole-percent weights. `browser/sampling.js`: which markers a crowded chart draws
-at full size, and the log-axis price zoom. Whichcar re-exports all three and keeps what is about
+at full size, and the log-axis price zoom, whose round unit follows the prices in range or the
+instance's `configureZoom` (Whichcar's whole thousands left a range of 300 to 900 unable to zoom). Whichcar re-exports all three and keeps what is about
 cars: the questions (`profile.js`), the results page's wording (`results.js`), what a pair card shows
 and the sentence counting the sample. Those are the next candidates once a second instance shows
 which parts of them it shares.
@@ -29,11 +30,11 @@ named the site:
 | Build and deploy tooling | `node/bundle.mjs`, `node/lint.mjs`, `node/coverage-badge.mjs`, `node/preview-server.mjs`, `node/site-meta.mjs`, `node/publisher.mjs`, `node/deploy-smoke-plan.mjs`, `node/report-alert.mjs` | 85 |
 | Priorities               | `browser/priorities.js` (`createPriorityModel`, `rankOrderCentroid`, `IMPORTANCE_LEVEL_WEIGHTS`) | 20 |
 | Help me choose           | `browser/pair-fit.js` (`createPairFit`)                                                    | 13    |
-| Chart sample and zoom    | `browser/sampling.js` (`sampleChartItems`, `clampPriceZoom`, `zoomPriceDomain`, …)        | 23    |
+| Chart sample and zoom    | `browser/sampling.js` (`sampleChartItems`, `clampPriceZoom`, `configureZoom`, …)          | 26    |
 | Statistics               | `node/stats.mjs` (`pearson`, `groupedHoldout`, `leaveOneOut`, `midRankPercentile`, …)     | 16    |
 | Instance plumbing        | `node/config.mjs`, `node/vendor.mjs`, `bin/*`                                             | 7     |
 
-367 tests, all domain-free: the weight-model, priority and pair-fit tests compare phones.
+370 tests, all domain-free: the weight-model, priority and pair-fit tests compare phones.
 
 ## What is deliberately not here yet
 

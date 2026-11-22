@@ -74,7 +74,21 @@ export function samplePerSlice(view, full) {
 // The narrowest range the chart zooms to: one end 12% above the other. Narrower than that and two
 // items a few hundred euros apart fill the plot, on prices the page itself calls indicative.
 export const MIN_ZOOM_RATIO = 1.12;
-const sameDomain = (a, b) => Math.abs(a[0] - b[0]) < 1 && Math.abs(a[1] - b[1]) < 1;
+// The round unit a zoomed range's ends snap to and its ticks step in. Whichcar prices SUVs in
+// thousands of euros and snapped to whole thousands; a fixed thousand made every zoom on a range of
+// EUR 300 to 900 snap back to the full range, so a catalogue of phones could not zoom at all (Codex
+// review on Whichrepo #2). Unless an instance sets one, the unit is a tenth of the order of magnitude
+// of the cheapest price in range: 1,000 for a range from 15,000, 10 for one from 300.
+let configuredZoomUnit = null;
+export function configureZoom({ unit = null } = {}) {
+  configuredZoomUnit = Number.isFinite(unit) && unit > 0 ? unit : null;
+}
+export function zoomUnit(domain) {
+  if (configuredZoomUnit) return configuredZoomUnit;
+  const low = Array.isArray(domain) && Number.isFinite(domain[0]) && domain[0] > 0 ? domain[0] : 1;
+  return 10 ** (Math.floor(Math.log10(low)) - 1);
+}
+const sameDomain = (a, b, unit) => Math.abs(a[0] - b[0]) < unit / 1000 && Math.abs(a[1] - b[1]) < unit / 1000;
 const validDomain = (domain) =>
   Array.isArray(domain) &&
   domain.length === 2 &&
@@ -105,14 +119,15 @@ export function clampPriceZoom(requested, full) {
     hi = b;
   }
   lo = Math.max(lo, a);
-  // Whole thousands, widened never narrowed, so the ends the axis prints ("€39k") are the ends it
-  // draws: a range from 38,512 printed as €39k put an item on the plot to the left of the first tick.
+  // Whole units, widened never narrowed, so the ends the axis prints ("€39k") are the ends it draws:
+  // a range from 38,512 printed as €39k put an item on the plot to the left of the first tick.
+  const unit = zoomUnit(full);
   const domain = [
-    Math.max(full[0], Math.floor(Math.exp(lo) / 1000 + 1e-9) * 1000),
-    Math.min(full[1], Math.ceil(Math.exp(hi) / 1000 - 1e-9) * 1000),
+    Math.max(full[0], Math.floor(Math.exp(lo) / unit + 1e-9) * unit),
+    Math.min(full[1], Math.ceil(Math.exp(hi) / unit - 1e-9) * unit),
   ];
   if (!(domain[1] > domain[0])) return null;
-  return sameDomain(domain, full) ? null : domain;
+  return sameDomain(domain, full, unit) ? null : domain;
 }
 
 // Zoom by a factor about a price: under 1 narrows the range, over 1 widens it, and the price under
@@ -139,13 +154,14 @@ export function priceAtX(axis, x) {
 
 // Ticks for a zoomed axis. The unzoomed axis takes its ticks from a 1-1.5-2-3-5-8 ladder, which puts
 // one tick, or none, inside a range like EUR 33k to 52k. A zoomed range is narrow enough to read in
-// even euro steps, so it gets the smallest round step whose labels still clear each other, plus its
-// two ends.
-const ZOOM_TICK_STEPS = [1000, 2000, 2500, 5000, 10000, 20000, 25000, 50000, 100000];
+// even steps of the zoom unit, so it gets the smallest round step whose labels still clear each
+// other, plus its two ends.
+const ZOOM_TICK_MULTIPLES = [1, 2, 2.5, 5, 10, 20, 25, 50, 100];
 export function zoomPriceTicks(axis, minimumGap = 64) {
   const [lo, hi] = axis.domain;
   if (!(hi > lo)) return [lo];
-  for (const step of ZOOM_TICK_STEPS) {
+  const unit = zoomUnit(axis.domain);
+  for (const step of ZOOM_TICK_MULTIPLES.map((multiple) => multiple * unit)) {
     const inner = [];
     for (let value = Math.ceil(lo / step) * step; value < hi; value += step)
       if (value > lo) inner.push(value);

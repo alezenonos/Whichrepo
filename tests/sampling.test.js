@@ -7,6 +7,8 @@ import { describe, it } from 'node:test';
 import {
   MIN_ZOOM_RATIO,
   clampPriceZoom,
+  configureZoom,
+  zoomUnit,
   priceAtX,
   sampleChartItems,
   samplePerSlice,
@@ -210,5 +212,31 @@ describe('zoomPriceTicks labels a zoomed axis', () => {
       assert.equal(ticks[0], domain[0]);
       assert.equal(ticks.at(-1), domain[1]);
     }
+  });
+});
+
+// Codex review on #2: the ends snapped to whole thousands, which suits SUVs and nothing cheaper. On a
+// range of 300 to 900 every zoom snapped back to the full range and was refused as "not a zoom", so a
+// catalogue of phones could not zoom at all.
+describe('the zoom unit follows the prices in range, unless the instance sets one', () => {
+  it('lets a range of a few hundred zoom, with ends and ticks in round tens', () => {
+    assert.equal(zoomUnit([300, 900]), 10);
+    assert.deepEqual(clampPriceZoom([500, 700], [300, 900]), [500, 700]);
+    assert.deepEqual(clampPriceZoom([503.4, 698.2], [300, 900]), [500, 700]);
+    assert.ok(zoomPriceDomain(null, [300, 900], 0.5));
+    const axis = priceScale([500, 700], 0, 1000);
+    const ticks = zoomPriceTicks(axis, 64);
+    assert.ok(ticks.length > 2 && ticks.every((value) => value % 10 === 0), JSON.stringify(ticks));
+  });
+  it('keeps whole thousands for prices in the tens of thousands', () => assert.equal(zoomUnit([15000, 160000]), 1000));
+  it('uses the unit an instance configures, whatever the range, until it is cleared', () => {
+    configureZoom({ unit: 1000 });
+    try {
+      assert.equal(zoomUnit([300, 900]), 1000);
+      assert.equal(zoomUnit([150000, 400000]), 1000);
+    } finally {
+      configureZoom();
+    }
+    assert.equal(zoomUnit([150000, 400000]), 10000);
   });
 });
