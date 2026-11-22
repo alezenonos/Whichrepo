@@ -1,6 +1,18 @@
 # Project status
 
-**Last reviewed:** 27 September 2026, when this repository was created from Whichcar.
+**Last reviewed:** 22 November 2026 (created from Whichcar on 27 September 2026).
+
+**22 November 2026, from Whichcar's needs-first redesign:** three browser modules, each with its
+tests ported and the defects they record. `browser/priorities.js` (`createPriorityModel`,
+`rankOrderCentroid`, `IMPORTANCE_LEVEL_WEIGHTS`): an order of importance or a level per dimension
+turned into whole percentages, and read back from them; it sat beside the band model in Whichcar's
+`scoring.js` and named no car. `browser/pair-fit.js` (`createPairFit`): "Help me choose", which two of a
+visitor's closest matches to compare and the importance levels that agree with their picks, judged
+on the page's own whole-percent weights. `browser/sampling.js`: which markers a crowded chart draws
+at full size, and the log-axis price zoom. Whichcar re-exports all three and keeps what is about
+cars: the questions (`profile.js`), the results page's wording (`results.js`), what a pair card shows
+and the sentence counting the sample. Those are the next candidates once a second instance shows
+which parts of them it shares.
 
 ## What is here
 
@@ -15,10 +27,13 @@ named the site:
 | Accessibility            | `browser/contrast.js`                                                                     | 8     |
 | Crawler infrastructure   | `node/fetch-page.mjs`, `node/crawler-args.mjs`, `node/merge-snapshot.mjs`, `node/snapshot-diff.mjs`, `node/conventions.mjs` | 82 |
 | Build and deploy tooling | `node/bundle.mjs`, `node/lint.mjs`, `node/coverage-badge.mjs`, `node/preview-server.mjs`, `node/site-meta.mjs`, `node/publisher.mjs`, `node/deploy-smoke-plan.mjs`, `node/report-alert.mjs` | 85 |
+| Priorities               | `browser/priorities.js` (`createPriorityModel`, `rankOrderCentroid`, `IMPORTANCE_LEVEL_WEIGHTS`) | 20 |
+| Help me choose           | `browser/pair-fit.js` (`createPairFit`)                                                    | 13    |
+| Chart sample and zoom    | `browser/sampling.js` (`sampleChartItems`, `clampPriceZoom`, `zoomPriceDomain`, …)        | 23    |
 | Statistics               | `node/stats.mjs` (`pearson`, `groupedHoldout`, `leaveOneOut`, `midRankPercentile`, …)     | 16    |
 | Instance plumbing        | `node/config.mjs`, `node/vendor.mjs`, `bin/*`                                             | 7     |
 
-311 tests, coverage 92% of lines, all domain-free: the weight-model tests compare phones.
+367 tests, all domain-free: the weight-model, priority and pair-fit tests compare phones.
 
 ## What is deliberately not here yet
 
